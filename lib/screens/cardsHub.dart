@@ -41,7 +41,9 @@ class _CardsHubScreenState extends State<CardsHubScreen> {
         title: Text(widget.title, style: const TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromARGB(255, 196, 87, 154),
       ),
-      body: ListView.builder(
+      body: Text(""),
+    );
+    /* ListView.builder(
         itemCount: displayCards.length,
         itemBuilder: (context, index) =>
             DisplayCardWidget(
@@ -50,7 +52,6 @@ class _CardsHubScreenState extends State<CardsHubScreen> {
                   pictureUrl: displayCards[index].pictureUrl,
                 )
                 as Widget?,
-      ),
-    );
+      ), */
   }
 }
