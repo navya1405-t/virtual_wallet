@@ -16,19 +16,25 @@ class _CardsHubScreenState extends State<CardsHubScreen> {
     DisplayCard(
       title: 'Aadhar',
       uploadedOn: 'Oct 29, 2025',
-      pictureUrl:
+      frontPictureUrl:
+          'https://images.unsplash.com/photo-1603415526960-f7e0328f8f1b?auto=format&fit=crop&w=800&q=80',
+      backPictureUrl:
           'https://images.unsplash.com/photo-1603415526960-f7e0328f8f1b?auto=format&fit=crop&w=800&q=80',
     ),
     DisplayCard(
       title: 'Driving License',
       uploadedOn: 'Oct 25, 2025',
-      pictureUrl:
+      frontPictureUrl:
           'https://images.unsplash.com/photo-1502764613149-7f1d229e230f?auto=format&fit=crop&w=800&q=80',
+      backPictureUrl:
+          'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=800&q=80',
     ),
     DisplayCard(
       title: 'Passport',
       uploadedOn: 'Oct 20, 2025',
-      pictureUrl:
+      backPictureUrl:
+          "https://images.unsplash.com/photo-1502764613149-7f1d229e230f?auto=format&fit=crop&w=800&q=80",
+      frontPictureUrl:
           'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=800&q=80',
     ),
   ];
@@ -41,17 +47,11 @@ class _CardsHubScreenState extends State<CardsHubScreen> {
         title: Text(widget.title, style: const TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromARGB(255, 196, 87, 154),
       ),
-      body: Text(""),
-    );
-    /* ListView.builder(
+      body: ListView.builder(
         itemCount: displayCards.length,
         itemBuilder: (context, index) =>
-            DisplayCardWidget(
-                  title: displayCards[index].title,
-                  uploadedOn: displayCards[index].uploadedOn,
-                  pictureUrl: displayCards[index].pictureUrl,
-                )
-                as Widget?,
-      ), */
+            DisplayCardWidget(card: displayCards[index]),
+      ),
+    );
   }
 }

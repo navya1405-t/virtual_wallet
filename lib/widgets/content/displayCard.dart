@@ -1,21 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:virtual_wallet/screens/overview.dart';
 
-class DisplayCardWidget {
-  final String title;
-  final String uploadedOn;
-  final String pictureUrl;
+import '../../class/displayCard.dart';
 
-  DisplayCardWidget({
-    required this.title,
-    required this.uploadedOn,
-    required this.pictureUrl,
-  });
-}
+class DisplayCardWidget extends StatelessWidget {
+  final DisplayCard card;
 
-class AadharCardWidget extends StatelessWidget {
-  final DisplayCardWidget card;
-
-  const AadharCardWidget({super.key, required this.card});
+  const DisplayCardWidget({super.key, required this.card});
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +36,15 @@ class AadharCardWidget extends StatelessWidget {
                 ),
                 IconButton(
                   icon: const Icon(
-                    Icons.visibility_outlined,
+                    Icons.open_in_new_outlined,
                     color: Color(0xFF6A1B9A),
                   ),
                   onPressed: () {
-                    // Handle overview action
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (_) => OverviewScreen(card: card),
+                      ),
+                    );
                   },
                 ),
               ],
@@ -62,7 +57,7 @@ class AadharCardWidget extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.network(
-                card.pictureUrl,
+                card.frontPictureUrl,
                 height: 180,
                 width: double.infinity,
                 fit: BoxFit.cover,
