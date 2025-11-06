@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:virtual_wallet/screens/cardsHub.dart';
-import 'package:virtual_wallet/screens/home.dart';
 import 'package:virtual_wallet/screens/login.dart';
 
 void main() {
