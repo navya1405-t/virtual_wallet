@@ -34,19 +34,21 @@ class _UploadScreenState extends State<UploadScreen> {
     final picked = await _picker.pickImage(source: source);
     if (picked == null) return;
     setState(() {
-      if (isFront)
+      if (isFront) {
         frontImage = File(picked.path);
-      else
+      } else {
         backImage = File(picked.path);
+      }
     });
   }
 
   Future<void> _deleteImage(bool isFront) async {
     setState(() {
-      if (isFront)
+      if (isFront) {
         frontImage = null;
-      else
+      } else {
         backImage = null;
+      }
     });
   }
 
@@ -65,6 +67,7 @@ class _UploadScreenState extends State<UploadScreen> {
 
     final user = await _dbHelper.getUserByUsername(widget.username);
     if (user == null) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User not found. Please login again.')),
       );
@@ -95,6 +98,7 @@ class _UploadScreenState extends State<UploadScreen> {
       });
     } catch (e) {
       ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(SnackBar(content: Text('Save failed: $e')));
     }

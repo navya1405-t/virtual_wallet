@@ -152,8 +152,6 @@ class DatabaseHelper {
     // If caller provided username, resolve to user_id and insert
     if (card.containsKey('username') && card['username'] != null) {
       final username = (card['username'] as String).trim();
-      print(username);
-      print("888888888888888888");
       final user = await getUserByUsername(username);
       if (user == null) {
         throw Exception('User "$username" not found');
@@ -183,8 +181,6 @@ class DatabaseHelper {
     final int userId = user['id'] as int;
     final Map<String, dynamic> toInsert = Map<String, dynamic>.from(card);
     toInsert['user_id'] = userId;
-    print(toInsert);
-    print("******************************************");
     return await dbClient.insert('Card', toInsert);
   }
 
