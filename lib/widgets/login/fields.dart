@@ -81,10 +81,6 @@ class LoginFields extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        TextButton(
-          onPressed: onRegister,
-          child: const Text("Don't have an account? Register"),
-        ),
       ],
     );
   }

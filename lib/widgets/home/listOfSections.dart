@@ -5,7 +5,12 @@ import 'card.dart';
 
 class ListOfSections extends StatelessWidget {
   final Color primary;
-  const ListOfSections({super.key, required this.primary});
+  final String username;
+  const ListOfSections({
+    super.key,
+    required this.primary,
+    required this.username,
+  });
 
   // Define sections once in a map/list
   static const List<Map<String, String>> _sections = [
@@ -27,7 +32,10 @@ class ListOfSections extends StatelessWidget {
           primary: primary,
           onTap: () {
             Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => CardsHubScreen(title: title)),
+              MaterialPageRoute(
+                builder: (_) =>
+                    CardsHubScreen(title: title, username: username),
+              ),
             );
           },
         );

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 
 import '../../helpers/database.dart';
@@ -75,7 +77,6 @@ class _LoginFormState extends State<LoginForm> {
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => HomeScreen(username: username)),
     );
-    // do not call setState after navigation
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:virtual_wallet/screens/upload.dart';
 
 import '../widgets/home/footer.dart';
 import '../widgets/home/header.dart';
@@ -15,9 +16,9 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Add new card tapped')));
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => UploadScreen(username: username)),
+          );
         },
         backgroundColor: primary,
         elevation: 8,
@@ -65,7 +66,10 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 20),
-                            ListOfSections(primary: primary),
+                            ListOfSections(
+                              primary: primary,
+                              username: username,
+                            ),
                             const SizedBox(height: 16),
                             const HomeFooter(),
                             const SizedBox(height: 32),

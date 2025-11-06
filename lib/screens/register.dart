@@ -1,17 +1,13 @@
-// ignore_for_file: camel_case_types
-
 import 'package:flutter/material.dart';
-import '../widgets/login/form.dart';
 import '../widgets/login/header.dart';
-import 'register.dart';
+import '../widgets/register/registerCard.dart';
 
-class loginScreen extends StatelessWidget {
-  const loginScreen({super.key});
+class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final Color primary = Theme.of(context).primaryColor;
-
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -28,18 +24,11 @@ class loginScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  LoginHeader(),
-                  SizedBox(height: 24),
-                  LoginForm(),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const RegisterScreen(),
-                        ),
-                      );
-                    },
-                    child: Text("Don't have an account? Register"),
+                  const LoginHeader(),
+                  const SizedBox(height: 24),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 520),
+                    child: const RegisterCard(), // main form card widget
                   ),
                 ],
               ),

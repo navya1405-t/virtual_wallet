@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:virtual_wallet/screens/cardsHub.dart';
+import 'package:virtual_wallet/screens/home.dart';
 import 'package:virtual_wallet/screens/login.dart';
 
 void main() {
@@ -18,8 +19,9 @@ class MyApp extends StatelessWidget {
         primaryColor: Color.fromARGB(255, 196, 87, 154),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: CardsHubScreen(title: "Proof of Identity"),
-      //loginScreen(),
+      home:
+          //HomeScreen(username: 'Navya'),
+          loginScreen(),
     );
   }
 }
