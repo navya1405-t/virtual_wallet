@@ -213,8 +213,18 @@ class DatabaseHelper {
   }
 
   // Optional: delete a card
-  Future<int> deleteCard(int id) async {
+  Future<int> deleteCard(String id) async {
     var dbClient = await db;
     return await dbClient.delete('Card', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<int> deleteCardByFilename(String filename) async {
+    var dbClient = await db;
+
+    return await dbClient.delete(
+      'Card', // table
+      where: 'filename = ?',
+      whereArgs: [filename],
+    );
   }
 }

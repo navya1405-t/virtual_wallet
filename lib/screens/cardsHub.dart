@@ -3,6 +3,7 @@ import 'package:virtual_wallet/class/displayCard.dart';
 
 import '../widgets/content/displayCard.dart';
 import '../helpers/database.dart';
+import 'overview.dart'; // added to navigate to overview and await result
 
 class CardsHubScreen extends StatefulWidget {
   final String title;
@@ -43,6 +44,7 @@ class _CardsHubScreenState extends State<CardsHubScreen> {
             frontPictureUrl: r['front_path'] as String? ?? '',
             backPictureUrl: r['back_path'] as String? ?? '',
             cardType: r['type'] as String? ?? '',
+            id: r['id'].toString(),
           ),
         );
       }
@@ -52,6 +54,16 @@ class _CardsHubScreenState extends State<CardsHubScreen> {
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  List<DisplayCard> get _filteredCards {
+    final title = widget.title.trim();
+    if (title.isEmpty) return _displayCards;
+    final lowerTitle = title.toLowerCase();
+    return _displayCards.where((c) {
+      final type = (c.cardType).toString().toLowerCase();
+      return type == lowerTitle;
+    }).toList();
   }
 
   @override
@@ -64,17 +76,31 @@ class _CardsHubScreenState extends State<CardsHubScreen> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : _displayCards.isEmpty
+          : _filteredCards.isEmpty
           ? Center(
               child: Text(
-                'No cards found for ${widget.username}',
+                'No cards found for "${widget.title}"',
                 style: const TextStyle(fontSize: 16),
               ),
             )
           : ListView.builder(
-              itemCount: _displayCards.length,
-              itemBuilder: (context, index) =>
-                  DisplayCardWidget(card: _displayCards[index]),
+              itemCount: _filteredCards.length,
+              itemBuilder: (context, index) {
+                final card = _filteredCards[index];
+                return DisplayCardWidget(
+                  card: card,
+                  onOpen: () async {
+                    final result = await Navigator.of(context).push<bool>(
+                      MaterialPageRoute(
+                        builder: (_) => OverviewScreen(card: card),
+                      ),
+                    );
+                    if (result == true) {
+                      await _loadCards();
+                    }
+                  },
+                );
+              },
             ),
     );
   }

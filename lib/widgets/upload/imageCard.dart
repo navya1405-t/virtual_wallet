@@ -77,12 +77,6 @@ class UploadImageCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(Icons.rotate_right, color: Colors.white),
-              onPressed: () {
-                /* optional */
-              },
-            ),
-            IconButton(
               icon: const Icon(Icons.delete, color: Colors.redAccent),
               onPressed: onDelete,
             ),

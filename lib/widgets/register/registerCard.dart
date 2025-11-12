@@ -32,11 +32,8 @@ class _RegisterCardState extends State<RegisterCard> {
     final password = _passwordCtl.text;
 
     try {
-      final id = await registerUser(username: username, password: password);
+      await registerUser(username: username, password: password);
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Registered (id: $id)')));
       Navigator.of(context).pop(username);
     } catch (e) {
       if (!mounted) return;

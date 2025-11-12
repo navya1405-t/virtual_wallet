@@ -10,9 +10,11 @@ class AdaptiveImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayHeight = height ?? 200.0;
+
     if (pathOrUrl == null || pathOrUrl!.isEmpty) {
       return SizedBox(
-        height: height ?? 200,
+        height: displayHeight,
         child: const Center(child: Icon(Icons.broken_image, size: 48)),
       );
     }
@@ -21,41 +23,49 @@ class AdaptiveImage extends StatelessWidget {
     final isNetwork =
         uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
 
+    // Use BoxFit.contain so the full image is visible (no cropping).
+    // Keep width infinite so it centers/letterboxes correctly inside the card.
     if (isNetwork) {
-      return Image.network(
-        pathOrUrl!,
+      return SizedBox(
         width: double.infinity,
-        height: height,
-        fit: BoxFit.cover,
-        loadingBuilder: (ctx, child, progress) {
-          if (progress == null) return child;
-          return SizedBox(
-            height: height ?? 200,
-            child: const Center(child: CircularProgressIndicator()),
-          );
-        },
-        errorBuilder: (ctx, err, st) => SizedBox(
-          height: height ?? 200,
-          child: const Center(child: Icon(Icons.broken_image, size: 48)),
+        height: displayHeight,
+        child: Image.network(
+          pathOrUrl!,
+          fit: BoxFit.contain,
+          alignment: Alignment.center,
+          loadingBuilder: (ctx, child, progress) {
+            if (progress == null) return child;
+            return SizedBox(
+              height: displayHeight,
+              child: const Center(child: CircularProgressIndicator()),
+            );
+          },
+          errorBuilder: (ctx, err, st) => SizedBox(
+            height: displayHeight,
+            child: const Center(child: Icon(Icons.broken_image, size: 48)),
+          ),
         ),
       );
     }
 
     try {
       final file = File(pathOrUrl!);
-      return Image.file(
-        file,
+      return SizedBox(
         width: double.infinity,
-        height: height,
-        fit: BoxFit.cover,
-        errorBuilder: (ctx, err, st) => SizedBox(
-          height: height ?? 200,
-          child: const Center(child: Icon(Icons.broken_image, size: 48)),
+        height: displayHeight,
+        child: Image.file(
+          file,
+          fit: BoxFit.contain,
+          alignment: Alignment.center,
+          errorBuilder: (ctx, err, st) => SizedBox(
+            height: displayHeight,
+            child: const Center(child: Icon(Icons.broken_image, size: 48)),
+          ),
         ),
       );
     } catch (_) {
       return SizedBox(
-        height: height ?? 200,
+        height: displayHeight,
         child: const Center(child: Icon(Icons.broken_image, size: 48)),
       );
     }
