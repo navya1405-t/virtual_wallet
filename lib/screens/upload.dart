@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../../helpers/database.dart';
 import '../widgets/upload/controls.dart';
 import '../widgets/upload/imageCard.dart';
@@ -73,8 +72,7 @@ class _UploadScreenState extends State<UploadScreen> {
       );
       return;
     }
-
-    final int userId = user['id'] as int;
+    var userId = user['id'];
     final cardMap = {
       'type': selectedCardType,
       'filename': filename,
@@ -85,17 +83,16 @@ class _UploadScreenState extends State<UploadScreen> {
     };
 
     try {
-      final id = await _dbHelper.saveCard(cardMap);
+      await _dbHelper.saveCard(cardMap);
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Card saved (id: $id)')));
       setState(() {
         frontImage = null;
         backImage = null;
         _fileNameController.clear();
         selectedCardType = null;
       });
+      // return true so caller knows to refresh
+      Navigator.of(context).pop(true);
     } catch (e) {
       ScaffoldMessenger.of(
         // ignore: use_build_context_synchronously
@@ -153,6 +150,32 @@ class _UploadScreenState extends State<UploadScreen> {
                 onPickCamera: () => _pickImage(false, ImageSource.camera),
                 onPickGallery: () => _pickImage(false, ImageSource.gallery),
                 onDelete: () => _deleteImage(false),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _fileNameController,
+                decoration: const InputDecoration(
+                  labelText: 'Filename',
+                  border: UnderlineInputBorder(),
+                ),
+              ),
+              const Spacer(),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: _saveCardToDb,
+                  child: const Text(
+                    'SAVE',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
             ],
           ),

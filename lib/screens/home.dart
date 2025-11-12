@@ -9,23 +9,15 @@ import '../widgets/home/listOfSections.dart';
 
 class HomeScreen extends StatelessWidget {
   final String username;
-  const HomeScreen({super.key, required this.username});
+  HomeScreen({super.key, required this.username});
 
   static const Color primary = Color.fromARGB(255, 196, 87, 154); // #C4579A
+
+  final GlobalKey sectionsKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => UploadScreen(username: username)),
-          );
-        },
-        backgroundColor: primary,
-        elevation: 8,
-        child: const Icon(Icons.add, size: 30, color: Colors.white),
-      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -69,6 +61,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 20),
                             ListOfSections(
+                              key: sectionsKey,
                               primary: primary,
                               username: username,
                             ),
@@ -85,6 +78,20 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.of(context).push<bool>(
+            MaterialPageRoute(builder: (_) => UploadScreen(username: username)),
+          );
+          if (result == true) {
+            // call the state's refresh method (use dynamic cast)
+            (sectionsKey.currentState as dynamic)?.refreshCounts();
+          }
+        },
+        backgroundColor: primary,
+        elevation: 8,
+        child: const Icon(Icons.add, size: 30, color: Colors.white),
       ),
     );
   }

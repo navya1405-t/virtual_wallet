@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../methods/formattedDate.dart';
 import 'adaptiveImage.dart';
 
 class CardSide extends StatelessWidget {
@@ -21,7 +22,7 @@ class CardSide extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 6,
-      clipBehavior: Clip.antiAlias,
+      //clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -41,16 +42,17 @@ class CardSide extends StatelessWidget {
           ),
           // adaptive image
           AdaptiveImage(pathOrUrl: imageUrl, height: imageHeight),
-          // footer
-          Container(
-            color: Colors.black54,
-            width: double.infinity,
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              "Uploaded on $uploadedDate",
-              style: const TextStyle(color: Colors.white),
+          // footer: only show when imageUrl is not null/empty
+          if (imageUrl != null && imageUrl!.isNotEmpty)
+            Container(
+              color: Colors.black54,
+              width: double.infinity,
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                "Uploaded on ${formatUploadedDate(uploadedDate)}",
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
-          ),
         ],
       ),
     );

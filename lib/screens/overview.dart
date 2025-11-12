@@ -1,6 +1,10 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:virtual_wallet/class/displayCard.dart';
 
+import '../methods/confirmAndDelete.dart';
+import '../methods/share.dart';
 import '../widgets/overview/cardside.dart';
 
 class OverviewScreen extends StatelessWidget {
@@ -23,11 +27,11 @@ class OverviewScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.share, color: Colors.white),
-            onPressed: () {},
+            onPressed: () => shareCard(context, card),
           ),
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.white),
-            onPressed: () {},
+            onPressed: () => confirmAndDelete(context, card),
           ),
         ],
       ),

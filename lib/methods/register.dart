@@ -12,10 +12,6 @@ Future<int> registerUser({
   if (trimmed.length < 3) {
     throw Exception('Username must be at least 3 characters');
   }
-  if (password.length < 6) {
-    throw Exception('Password must be at least 6 characters');
-  }
-
   final exists = await db.userExists(trimmed);
   if (exists) {
     throw Exception('Username already exists');
