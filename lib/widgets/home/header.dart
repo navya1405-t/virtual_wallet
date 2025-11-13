@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../../methods/info.dart';
+
 class HomeHeader extends StatelessWidget {
   final String username;
   final Color primary;
@@ -82,10 +84,11 @@ class HomeHeader extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () => ShowAboutDialog(context, username),
             icon: const Icon(Icons.info_outline),
             color: Colors.white70,
             iconSize: 26,
+            tooltip: 'About this app',
           ),
         ],
       ),

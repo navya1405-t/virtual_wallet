@@ -24,10 +24,43 @@ class _CardsHubScreenState extends State<CardsHubScreen> {
   bool _loading = true;
   final DatabaseHelper _dbHelper = DatabaseHelper();
 
+  // search state
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
   @override
   void initState() {
     super.initState();
     _loadCards();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    setState(() => _searchQuery = _searchController.text.trim().toLowerCase());
+  }
+
+  void _startSearch() {
+    setState(() {
+      _isSearching = true;
+      _searchController.text = '';
+      _searchQuery = '';
+    });
+  }
+
+  void _stopSearch() {
+    setState(() {
+      _isSearching = false;
+      _searchController.text = '';
+      _searchQuery = '';
+    });
   }
 
   Future<void> _loadCards() async {
@@ -57,13 +90,26 @@ class _CardsHubScreenState extends State<CardsHubScreen> {
   }
 
   List<DisplayCard> get _filteredCards {
-    final title = widget.title.trim();
-    if (title.isEmpty) return _displayCards;
-    final lowerTitle = title.toLowerCase();
-    return _displayCards.where((c) {
-      final type = (c.cardType).toString().toLowerCase();
-      return type == lowerTitle;
-    }).toList();
+    final sectionTitle = widget.title.trim();
+    final lowerTitle = sectionTitle.toLowerCase();
+
+    Iterable<DisplayCard> list = _displayCards;
+
+    // filter by section (type) if a section title is provided
+    if (sectionTitle.isNotEmpty) {
+      list = list.where((c) => (c.cardType).toLowerCase() == lowerTitle);
+    }
+
+    // apply search query (search filename and type)
+    if (_searchQuery.isNotEmpty) {
+      list = list.where((c) {
+        final filename = (c.filename).toLowerCase();
+        final type = (c.cardType).toLowerCase();
+        return filename.contains(_searchQuery) || type.contains(_searchQuery);
+      });
+    }
+
+    return list.toList();
   }
 
   @override
@@ -71,15 +117,53 @@ class _CardsHubScreenState extends State<CardsHubScreen> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(widget.title, style: const TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromARGB(255, 196, 87, 154),
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Search for card...',
+                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.85)),
+                  border: InputBorder.none,
+                ),
+                style: const TextStyle(color: Colors.white),
+              )
+            : Text(widget.title, style: const TextStyle(color: Colors.white)),
+        actions: [
+          if (_isSearching)
+            IconButton(
+              icon: const Icon(Icons.clear, color: Colors.white),
+              onPressed: () {
+                if (_searchController.text.isEmpty) {
+                  _stopSearch();
+                } else {
+                  _searchController.clear();
+                }
+              },
+            ),
+          // always show the search icon at the end
+          IconButton(
+            icon: const Icon(Icons.search, color: Colors.white),
+            tooltip: 'Search',
+            onPressed: () {
+              if (_isSearching) {
+                _stopSearch();
+              } else {
+                _startSearch();
+              }
+            },
+          ),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _filteredCards.isEmpty
           ? Center(
               child: Text(
-                'No cards found for "${widget.title}"',
+                _searchQuery.isNotEmpty
+                    ? 'No results for "$_searchQuery"'
+                    : 'No cards found for "${widget.title}"',
                 style: const TextStyle(fontSize: 16),
               ),
             )
