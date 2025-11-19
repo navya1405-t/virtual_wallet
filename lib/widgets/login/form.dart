@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:virtual_wallet/screens/register.dart';
 
 import '../../helpers/database.dart';
 import '../../screens/home.dart';
@@ -57,13 +58,18 @@ class _LoginFormState extends State<LoginForm> {
     }
 
     final exists = await _dbHelper.userExists(username);
+
+    // stop loading before showing dialogs
+    if (mounted) setState(() => _loading = false);
+
     if (exists) {
-      if (mounted) setState(() => _loading = false);
+      // ✅ Directly show reset password dialog (skip "User exists" alert)
       final updated = await ResetPasswordDialog.show(
         context,
         username,
         _dbHelper,
       );
+
       if (updated == true && mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => HomeScreen(username: username)),
@@ -72,11 +78,47 @@ class _LoginFormState extends State<LoginForm> {
       return;
     }
 
-    await _dbHelper.saveUser({'username': username, 'password': password});
-    if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => HomeScreen(username: username)),
+    // user not registered -> ask to register
+    final doRegister = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('User not registered'),
+        content: Text(
+          'No account found for "$username". Create a new account with the entered password?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false);
+              _usernameController.clear();
+              _passwordController.clear();
+              Navigator.of(
+                ctx,
+              ).push(MaterialPageRoute(builder: (_) => RegisterScreen()));
+            },
+            child: const Text('Register'),
+          ),
+        ],
+      ),
     );
+
+    if (doRegister == true) {
+      try {
+        await _dbHelper.saveUser({'username': username, 'password': password});
+        if (!mounted) return;
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => HomeScreen(username: username)),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Registration failed: $e')));
+      }
+    }
   }
 
   @override
