@@ -116,69 +116,96 @@ class _UploadScreenState extends State<UploadScreen> {
     final controlsHeight = availableHeight * 0.25;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true, // ensure scaffold adjusts for keyboard
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text('Upload Card'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
+      // Replaced body with a keyboard-aware SingleChildScrollView wrapping a ConstrainedBox
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Column(
-            children: [
-              UploadControls(
-                cardTypes: cardTypes,
-                selectedType: selectedCardType,
-                onTypeChanged: (v) => setState(() => selectedCardType = v),
-                fileNameController: _fileNameController,
-                controlsHeight: controlsHeight,
-                onSave: _saveCardToDb,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 8,
+                // add bottom padding equal to keyboard height so content is visible
+                bottom: MediaQuery.of(context).viewInsets.bottom + 16,
               ),
-              const SizedBox(height: 8),
-              UploadImageCard(
-                label: 'Front Side',
-                imageFile: frontImage,
-                height: imageBlockHeight,
-                onPickCamera: () => _pickImage(true, ImageSource.camera),
-                onPickGallery: () => _pickImage(true, ImageSource.gallery),
-                onDelete: () => _deleteImage(true),
-              ),
-              UploadImageCard(
-                label: 'Back Side',
-                imageFile: backImage,
-                height: imageBlockHeight,
-                onPickCamera: () => _pickImage(false, ImageSource.camera),
-                onPickGallery: () => _pickImage(false, ImageSource.gallery),
-                onDelete: () => _deleteImage(false),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _fileNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Filename',
-                  border: UnderlineInputBorder(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      UploadControls(
+                        cardTypes: cardTypes,
+                        selectedType: selectedCardType,
+                        onTypeChanged: (v) =>
+                            setState(() => selectedCardType = v),
+                        fileNameController: _fileNameController,
+                        controlsHeight: controlsHeight,
+                        onSave: _saveCardToDb,
+                      ),
+                      const SizedBox(height: 8),
+                      UploadImageCard(
+                        label: 'Front Side',
+                        imageFile: frontImage,
+                        height: imageBlockHeight,
+                        onPickCamera: () =>
+                            _pickImage(true, ImageSource.camera),
+                        onPickGallery: () =>
+                            _pickImage(true, ImageSource.gallery),
+                        onDelete: () => _deleteImage(true),
+                      ),
+                      UploadImageCard(
+                        label: 'Back Side',
+                        imageFile: backImage,
+                        height: imageBlockHeight,
+                        onPickCamera: () =>
+                            _pickImage(false, ImageSource.camera),
+                        onPickGallery: () =>
+                            _pickImage(false, ImageSource.gallery),
+                        onDelete: () => _deleteImage(false),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: _fileNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Filename',
+                          border: UnderlineInputBorder(),
+                        ),
+                      ),
+                      // const Spacer(),
+                      const SizedBox(height: 12),
+
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: _saveCardToDb,
+                          child: const Text(
+                            'SAVE',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: _saveCardToDb,
-                  child: const Text(
-                    'SAVE',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
