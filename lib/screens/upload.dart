@@ -184,7 +184,7 @@ class _UploadScreenState extends State<UploadScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
+                            backgroundColor: Theme.of(context).primaryColor,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -195,6 +195,7 @@ class _UploadScreenState extends State<UploadScreen> {
                             'SAVE',
                             style: TextStyle(
                               fontSize: 16,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
