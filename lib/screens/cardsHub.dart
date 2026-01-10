@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:virtual_wallet/class/displayCard.dart';
 
+import '../provider/cards.dart';
 import '../widgets/content/displayCard.dart';
 import '../helpers/database.dart';
 import 'overview.dart'; // added to navigate to overview and await result
 
-class CardsHubScreen extends StatefulWidget {
+class CardsHubScreen extends ConsumerStatefulWidget {
   final String title;
   final String username; // username to load cards for
 
@@ -16,10 +18,10 @@ class CardsHubScreen extends StatefulWidget {
   });
 
   @override
-  State<CardsHubScreen> createState() => _CardsHubScreenState();
+  ConsumerState<CardsHubScreen> createState() => _CardsHubScreenState();
 }
 
-class _CardsHubScreenState extends State<CardsHubScreen> {
+class _CardsHubScreenState extends ConsumerState<CardsHubScreen> {
   final List<DisplayCard> _displayCards = [];
   bool _loading = true;
   final DatabaseHelper _dbHelper = DatabaseHelper();
@@ -81,6 +83,7 @@ class _CardsHubScreenState extends State<CardsHubScreen> {
           ),
         );
       }
+      ref.read(cardsProvider(widget.username).notifier).setCards(_displayCards);
     } catch (e) {
       // optional: show error
       debugPrint('Failed to load cards: $e');
@@ -114,6 +117,8 @@ class _CardsHubScreenState extends State<CardsHubScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(cardsProvider(widget.username));
+
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
@@ -176,7 +181,10 @@ class _CardsHubScreenState extends State<CardsHubScreen> {
                   onOpen: () async {
                     final result = await Navigator.of(context).push<bool>(
                       MaterialPageRoute(
-                        builder: (_) => OverviewScreen(card: card),
+                        builder: (_) => OverviewScreen(
+                          card: card,
+                          username: widget.username,
+                        ),
                       ),
                     );
                     if (result == true) {

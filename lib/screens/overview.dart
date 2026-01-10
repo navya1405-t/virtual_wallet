@@ -1,18 +1,21 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:virtual_wallet/class/displayCard.dart';
 
 import '../methods/confirmAndDelete.dart';
 import '../methods/share.dart';
 import '../widgets/overview/cardside.dart';
 
-class OverviewScreen extends StatelessWidget {
+class OverviewScreen extends ConsumerWidget {
   final DisplayCard card;
-  const OverviewScreen({super.key, required this.card});
+  final String username;
+
+  const OverviewScreen({super.key, required this.card, required this.username});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final media = MediaQuery.of(context);
     final appBarHeight = kToolbarHeight + media.padding.top;
     final availableHeight = media.size.height - appBarHeight - 48;
@@ -31,7 +34,7 @@ class OverviewScreen extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.white),
-            onPressed: () => confirmAndDelete(context, card),
+            onPressed: () => confirmAndDelete(context, ref, card, username),
           ),
         ],
       ),

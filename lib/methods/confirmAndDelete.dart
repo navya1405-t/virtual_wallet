@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:virtual_wallet/class/displayCard.dart';
 
 import '../helpers/database.dart';
+import '../provider/cards.dart';
 
-Future<void> confirmAndDelete(BuildContext context, DisplayCard card) async {
+Future<void> confirmAndDelete(
+  BuildContext context,
+  WidgetRef ref,
+  DisplayCard card,
+  String username,
+) async {
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (ctx) => AlertDialog(
@@ -28,6 +35,7 @@ Future<void> confirmAndDelete(BuildContext context, DisplayCard card) async {
     final db = DatabaseHelper();
     // expects DatabaseHelper.deleteCardByFilename to return number of rows deleted
     final deleted = await db.deleteCard(card.id);
+    ref.read(cardsProvider(username).notifier).removeCard(card.id);
     if (deleted > 0) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(

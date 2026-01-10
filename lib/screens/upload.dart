@@ -1,19 +1,22 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../helpers/database.dart';
+import '../class/displayCard.dart';
+import '../provider/cards.dart';
 import '../widgets/upload/controls.dart';
 import '../widgets/upload/imageCard.dart';
 
-class UploadScreen extends StatefulWidget {
+class UploadScreen extends ConsumerStatefulWidget {
   final String username;
   const UploadScreen({super.key, required this.username});
 
   @override
-  State<UploadScreen> createState() => _UploadScreenState();
+  ConsumerState<UploadScreen> createState() => _UploadScreenState();
 }
 
-class _UploadScreenState extends State<UploadScreen> {
+class _UploadScreenState extends ConsumerState<UploadScreen> {
   final TextEditingController _fileNameController = TextEditingController();
   String? selectedCardType;
   File? frontImage;
@@ -72,30 +75,42 @@ class _UploadScreenState extends State<UploadScreen> {
       );
       return;
     }
+
     var userId = user['id'];
+    final uploadTime = DateTime.now().toIso8601String();
+
     final cardMap = {
       'type': selectedCardType,
       'filename': filename,
       'front_path': frontImage?.path,
       'back_path': backImage?.path,
-      'uploaded_on': DateTime.now().toIso8601String(),
+      'uploaded_on': uploadTime,
       'user_id': userId,
     };
 
     try {
-      await _dbHelper.saveCard(cardMap);
+      // 1. Save to Database and get the new ID
+      final newId = await _dbHelper.saveCard(cardMap);
+
+      // 2. Create the DisplayCard object
+      final newCard = DisplayCard(
+        id: newId.toString(),
+        filename: filename,
+        cardType: selectedCardType!, // we checked for null above
+        frontPictureUrl: frontImage?.path ?? '',
+        backPictureUrl: backImage?.path ?? '',
+        uploadedOn: uploadTime,
+      );
+
+      // 3. Add to Provider (Updates UI instantly across the app)
+      ref.read(cardsProvider(widget.username).notifier).addCard(newCard);
+
       if (!mounted) return;
-      setState(() {
-        frontImage = null;
-        backImage = null;
-        _fileNameController.clear();
-        selectedCardType = null;
-      });
-      // return true so caller knows to refresh
-      Navigator.of(context).pop(true);
+
+      // 4. Pop without returning data (Provider handles the update)
+      Navigator.of(context).pop();
     } catch (e) {
       ScaffoldMessenger.of(
-        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(SnackBar(content: Text('Save failed: $e')));
     }
