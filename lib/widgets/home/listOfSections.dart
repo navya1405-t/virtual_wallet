@@ -4,7 +4,6 @@ import 'package:virtual_wallet/provider/cards.dart';
 
 import '../../screens/cardsHub.dart';
 import 'card.dart';
-import '../../helpers/database.dart';
 
 class ListOfSections extends ConsumerStatefulWidget {
   final Color primary;
@@ -48,7 +47,7 @@ class _ListOfSectionsState extends ConsumerState<ListOfSections> {
           primary: widget.primary,
           onTap: () async {
             // Await the pushed screen and reload counts when it returns.
-            final result = await Navigator.of(context).push<bool>(
+            await Navigator.of(context).push<bool>(
               MaterialPageRoute(
                 builder: (_) =>
                     CardsHubScreen(title: title, username: widget.username),
